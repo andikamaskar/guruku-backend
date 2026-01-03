@@ -41,9 +41,38 @@ Jika pengguna bertanya hal di luar konteks pelajaran sekolah:
 """
 
 # Inisialisasi model dengan instruction tetap
+# Konfigurasi Safety Settings yang ketat
+safety_settings = [
+    {
+        "category": "HARM_CATEGORY_HARASSMENT",
+        "threshold": "BLOCK_LOW_AND_ABOVE"
+    },
+    {
+        "category": "HARM_CATEGORY_HATE_SPEECH",
+        "threshold": "BLOCK_LOW_AND_ABOVE"
+    },
+    {
+        "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+        "threshold": "BLOCK_LOW_AND_ABOVE"
+    },
+    {
+        "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
+        "threshold": "BLOCK_LOW_AND_ABOVE"
+    }
+]
+
+# Konfigurasi Generation Config
+generation_config = genai.types.GenerationConfig(
+    temperature=0.3, # Rendah agar lebih patuh pada instruksi, mengurangi halusinasi
+    candidate_count=1,
+    max_output_tokens=2048,
+)
+
 model = genai.GenerativeModel(
     model_name="gemini-2.5-flash-lite",
-    system_instruction=TEACHER_INSTRUCTION
+    system_instruction=TEACHER_INSTRUCTION,
+    safety_settings=safety_settings,
+    generation_config=generation_config
 )
 
 def upload_to_gemini(path, mime_type=None):
